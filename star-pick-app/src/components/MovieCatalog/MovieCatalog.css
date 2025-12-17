@@ -1,0 +1,38 @@
+.categoryName {
+    margin: 0;
+    padding: 8px 16px;
+    font-size: 30px;
+    color: #CAFFD0;
+}
+
+.posterList {
+    list-style: none;
+    display: flex;
+    overflow-x: auto;
+    padding: 0px 5px;
+    margin: 0;
+    overflow-y: hidden;
+}
+
+.posterList::-webkit-scrollbar {
+    display: none;
+}
+
+.posterList li {
+    display: inline-block;
+    margin: 5px;
+    height: 300px;
+}
+
+.posterList img {
+    width: 200px;
+    height: 100%;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.posterList img:hover {
+    transform: scale(1.05);
+    border-radius: 8px;
+}
