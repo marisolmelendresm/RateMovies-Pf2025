@@ -1,0 +1,13 @@
+.star {
+  width: 50px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.star:hover {
+    transform: scale(1.15);
+}
+
+.star svg {
+  display: block;
+}

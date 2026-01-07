@@ -1,8 +1,9 @@
 .categoryName {
     margin: 0;
-    padding: 8px 16px;
+    padding: 0 0 8px 16px;
     font-size: 40px;
     color: #FFA546;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .posterList {

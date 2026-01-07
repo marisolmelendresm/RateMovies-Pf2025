@@ -1,0 +1,42 @@
+
+
+.signupTitle {
+    color: #9D8BFB;
+    font-size: 35px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.signupContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 50px 25px;
+    gap: 30px;
+    align-items: center;
+}
+
+.signupForm {
+    width: 420px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.signupInput {
+    width: 400px;
+}
+
+.signupButton {
+    width: 100px;
+}
+
+.loginOpt {
+    color: white;
+    margin: 0;
+    font-size: 15px;
+}
+
+.loginLink {
+    color: #FFA546;
+}

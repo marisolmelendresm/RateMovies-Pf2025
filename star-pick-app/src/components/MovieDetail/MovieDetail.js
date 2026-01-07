@@ -8,6 +8,7 @@ import ReviewInputBox from '../ReviewInputBox/ReviewInputBox.js';
 function MovieDetail() {
     const { imdbID } = useParams();
     const [movieDetails, setMovieDetails] = useState({});
+    const [watched, setWatched] = useState(false);
 
     useEffect(() => {
         const getMovieRequest = async () => {
@@ -26,7 +27,7 @@ function MovieDetail() {
             <div className="movieInfo">
                 <h1 className="movieTitle header">{movieDetails.Title}</h1>
                 <h2 className="movieYear header">{movieDetails.Year}</h2>
-                <Question/>
+                <Question checked={watched} onClick={() => setWatched(prev => !prev)}/>
                 <b className="subtitle">Rate it!</b>
                 <div className="rating">
                     <StarRating/>

@@ -1,8 +1,10 @@
 import MovieCatalog from '../MovieCatalog/MovieCatalog';
 import './Profile.css';
+import { useState } from 'react';
 
 function Profile() {
-    const watchCount = 0;
+    const [watchCount, setWatchCount] = useState(0);
+    const [favorites, setFavorites] = useState([]);
 
     return (
         <div>
@@ -16,7 +18,7 @@ function Profile() {
                 <p className="watchText">movies this year</p>
             </div>
             <div className="movieCatalogContainer">
-                <MovieCatalog categoryName="Rocky" />
+                <MovieCatalog categoryName="Rocky" list={favorites} />
                 <MovieCatalog categoryName="Avengers" />
             </div>
 

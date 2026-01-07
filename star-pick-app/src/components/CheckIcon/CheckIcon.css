@@ -1,0 +1,25 @@
+.checkCircle {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  cursor: pointer;
+  transition: stroke 150ms ease, transform 120ms ease;
+}
+
+/* Unchecked state */
+.checkCircle.unchecked {
+  stroke: #9ca3af; /* gray */
+}
+
+/* Checked state */
+.checkCircle.checked {
+  stroke: #22c55e; /* green */
+}
+
+/* Click feedback */
+.checkCircle:active {
+  transform: scale(0.9);
+}

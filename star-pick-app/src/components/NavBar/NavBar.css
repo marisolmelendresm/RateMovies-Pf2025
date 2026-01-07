@@ -5,7 +5,8 @@
     align-items: center;
     padding: 0px 20px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-    height: 50px
+    height: 50px;
+    position: relative;
 }
 
 .navBar-left, .navBar-right {
@@ -23,16 +24,13 @@
 }
 
 .navBarCenter {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-52%);
     font-size: 25px;
     font-weight: bold;
     text-align: center;
     color: white;
-}
-
-.navBar-center {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
 }
 
 .navLink:hover {
@@ -67,7 +65,7 @@
     display: none;
     position: absolute;
     right: 15px;
-    top: 40px;
+    top: 50px;
 }
 
 .dropdownOpen {
@@ -96,7 +94,7 @@
     margin-top: 10px;
 }
 
-.name {
+.dropdownName {
     color: white;
     margin: 0;
     padding: 0px 16px;
