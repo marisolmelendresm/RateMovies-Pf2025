@@ -1,17 +1,49 @@
+import { useNavigate } from 'react-router-dom';
 import './Signup.css';
 import { useState } from 'react';
+import { useLoading } from '../../context/LoadingContext';
 
 function Signup() {
-    const [signupData, setSignupData] = useState({
-        fullName: '',
-        email: '',
-        username: '',
-        password: ''
-    });
+    const [error, setError] = useState(null);
+    const { setLoading } = useLoading();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Signup data submitted:', signupData);
+    const navigate = useNavigate();
+
+    const delay = (ms) =>
+        new Promise(resolve => setTimeout(resolve, ms));
+    
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+
+        const data = {
+            fullName: formData.get("fullName"),
+            username: formData.get("username"),
+            email: formData.get("email"),
+            password: formData.get("password")
+        };
+
+        const response = await fetch("http://localhost:3001/signup", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+            setError(result.message);
+        } else {
+            try {
+                setError(null);
+                setLoading(true);
+                await delay(700);
+                navigate("/login");
+            } finally {
+                setLoading(false);
+            }
+        }
     }
 
     return (
@@ -26,7 +58,9 @@ function Signup() {
                         <input
                             type="text"
                             id="fullName"
+                            name="fullName"
                             className="signupInput"
+                            required
                         />
                     </div>
 
@@ -36,7 +70,9 @@ function Signup() {
                         <input
                             type="email"
                             id="email"
+                            name="email"
                             className="signupInput"
+                            required
                         />
                     </div>
                 </fieldset>
@@ -49,7 +85,9 @@ function Signup() {
                         <input
                             type="text"
                             id="username"
-                            className="signupInput"
+                            name="username"
+                            className="signupInput" 
+                            required
                         />
                     </div>
                     <div className="inputContainer">
@@ -58,10 +96,13 @@ function Signup() {
                         <input
                             type="password"
                             id="password"
+                            name="password"
                             className="signupInput"
+                            required
                         />
                     </div>
                 </fieldset>
+                {error && <p className="errorMessage" aria-live="polite">{error}</p>}
                 <button type="submit" className="signupButton">Sign Up</button>
             </form>
             <p className="loginOpt">Already have an account? <a className="loginLink" href="/login">Log in</a></p>

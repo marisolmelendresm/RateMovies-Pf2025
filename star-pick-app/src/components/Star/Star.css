@@ -1,11 +1,14 @@
 .star {
   width: 50px;
+}
+
+.star.enabled {
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
 }
 
-.star:hover {
-    transform: scale(1.15);
+.star.enabled:hover {
+  transform: scale(1.15);
 }
 
 .star svg {

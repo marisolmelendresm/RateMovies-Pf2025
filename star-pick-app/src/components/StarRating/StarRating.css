@@ -1,13 +1,3 @@
-.starItem {
-    transition: transform 0.2s ease-in-out;
-    color: white;
-}
-
-.starItem:hover {
-    transform: scale(1.15);
-}
-
 .starRating {
     display: flex;
-    padding: 10px 0px;
 }

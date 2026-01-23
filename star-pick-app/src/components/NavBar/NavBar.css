@@ -15,8 +15,11 @@
   gap: 5px;
 }
 
-.navLink {
+.navLink.padding {
     padding: 6px 16px;
+}
+
+.navLink {
     color: white;
     text-decoration: none;
     border-radius: 20px;
@@ -37,7 +40,7 @@
     color: gray;
 }
 
-.navLink.active {
+.highlight.active {
     background-color: #4b4b4b;
 }
 
@@ -59,6 +62,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 }
 
 .dropdown {

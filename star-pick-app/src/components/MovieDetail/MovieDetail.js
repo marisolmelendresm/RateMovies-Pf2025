@@ -3,23 +3,83 @@ import { useEffect, useState } from 'react';
 import './MovieDetail.css';
 import Question from '../Question/Question';
 import StarRating from '../StarRating/StarRating.js';
-import ReviewInputBox from '../ReviewInputBox/ReviewInputBox.js';
+import { useLoading } from '../../context/LoadingContext.js';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/UserContext';
 
 function MovieDetail() {
+    const navigate = useNavigate();
     const { imdbID } = useParams();
+    const { setLoading } = useLoading();
+    const { user } = useUser();
+
     const [movieDetails, setMovieDetails] = useState({});
     const [watched, setWatched] = useState(false);
+    const [stars, setStars] = useState(0);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const getMovieRequest = async () => {
             const url = `http://www.omdbapi.com/?i=${imdbID}&apikey=188ab898`;
-            const response = await fetch(url);
-            const responseJson = await response.json();
-            setMovieDetails(responseJson);
+            try {
+                setLoading(true);
+                const response = await fetch(url);
+                const responseJson = await response.json();
+                setMovieDetails(responseJson);
+            } finally {
+                setLoading(false);
+            }
         };
 
         getMovieRequest();
     }, [imdbID]);
+
+    const recordWatch = async () => {
+        setWatched(true);
+        const watchRecord = {userId: user.id, movieId: imdbID};
+
+        const response = await fetch("http://localhost:3001/watched", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(watchRecord)
+        })
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            console.log(result.message);
+        }
+    }
+
+    const saveReview = async (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const reviewText = formData.get("review");
+        const review = {userId: user.id, movieId: movieDetails.imdbID, star: stars, text: reviewText};
+
+        if (!stars) {
+            setError("Please add a star rating before submitting");
+            return;
+        }
+
+        try {
+            setLoading(true)
+            const response = await fetch("http://localhost:3001/review", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(review)
+            })
+            if (response.ok) {
+                navigate("/profile");
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <div className="movieDetail">
@@ -27,12 +87,22 @@ function MovieDetail() {
             <div className="movieInfo">
                 <h1 className="movieTitle header">{movieDetails.Title}</h1>
                 <h2 className="movieYear header">{movieDetails.Year}</h2>
-                <Question checked={watched} onClick={() => setWatched(prev => !prev)}/>
+                <Question checked={watched} onClick={recordWatch}/>
+                
                 <b className="subtitle">Rate it!</b>
-                <div className="rating">
-                    <StarRating/>
-                    <ReviewInputBox/>
-                </div>
+                <form className="rating" onSubmit={saveReview}>
+                    <StarRating disabled={!watched} setStars={setStars}/>
+                    <label className="hiddenLabel" htmlFor="review">Review</label>
+                    <textarea
+                        className={`inputBox ${watched ? '' : 'disabled'}`}
+                        disabled={!watched}
+                        id="review"
+                        name="review"
+                        placeholder="Write your take"
+                    ></textarea>
+                    {error && <p className="errorMessage" aria-live="polite">{error}</p>}
+                    <button disabled={!watched} className={`saveReviewButton ${watched ? '' : 'disabled'}`} type="submit">Save</button>
+                </form>
             </div>
         </div>
     )

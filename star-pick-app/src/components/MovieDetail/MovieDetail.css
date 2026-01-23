@@ -49,6 +49,58 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    align-self: center;
-    gap: 10px;
+    gap: 25px;
+}
+
+button:not(.disabled) {
+    background-color: #6320EE;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s ease;
+}
+
+button {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+}
+
+.inputBox {
+    padding: 10px;
+    font-size: 20px;
+    border-radius: 5px;
+    width: 550px;
+    height: 300px;
+    font-size: 18px;
+    color-scheme: dark;
+    border: none;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    resize: none;
+}
+
+.inputBox.disabled::placeholder {
+    color: lightgray;
+    opacity: 0.1;
+}
+
+button:active:not(.disabled) {
+    transform: scale(0.95);
+}
+
+.saveReviewButton {
+    width: 150px;
+    font-size: 17px;
+}
+
+.hiddenLabel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }

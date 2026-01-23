@@ -1,15 +1,16 @@
-import { useEffect } from "react";
+import { useState } from "react";
 import MovieCatalog from "../MovieCatalog/MovieCatalog";
 import './Home.css';
 
-function Home() {
+function Home({ onLoad }) {
+    const [loadedCatalog, setLoadedCatalog] = useState(false);
 
     return (
         <div>
             <h2 className="homeTitle">Let them know your take!</h2>
-            <MovieCatalog categoryName="Barbie"></MovieCatalog>
-            <MovieCatalog categoryName="Harry Potter"></MovieCatalog>
-            <MovieCatalog categoryName="Star Wars"></MovieCatalog>
+            <MovieCatalog categoryName="watch-again" onLoad={onLoad}></MovieCatalog>
+            <MovieCatalog categoryName="watch-again" onLoad={onLoad}></MovieCatalog>
+            <MovieCatalog categoryName="watch-again" onLoad={onLoad}></MovieCatalog>
         </div>
     )
 }

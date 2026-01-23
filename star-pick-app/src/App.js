@@ -6,21 +6,37 @@ import MovieDetail from './components/MovieDetail/MovieDetail';
 import Profile from './components/Profile/Profile';
 import Login from './components/Login/Login';
 import Signup from './components/Signup/Signup';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLoading } from './context/LoadingContext';
+import { useUser } from './context/UserContext';
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
+  //const [loggedIn, setUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
+  const { loading } = useLoading();
+  const { setUser } = useUser();
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+    setAuthChecked(true);
+  }, [])
 
   return (
     <div>
-      <NavBar />
+      <div className={loading ? 'loading' : ''}>
+        <div className={loading ? 'loader' : ''}/>
+      </div>
+      <NavBar/>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login/>} />
+        <Route path="/signup" element={<Signup/>} />
+        <Route path="/" element={<Home/>} />
         <Route path="/search" element={<h2>Search Page Coming Soon!</h2>} />
-        <Route path="/movie/:imdbID" element={<MovieDetail />} />
-        <Route path="/profile" element={<Profile/>} />
+        <Route path="/movie/:imdbID" element={<MovieDetail/>} />
+        <Route path="/profile" element={<Profile authChecked={authChecked}/>} />
       </Routes>
     </div>
   );

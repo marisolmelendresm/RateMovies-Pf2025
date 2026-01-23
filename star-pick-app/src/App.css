@@ -1,1 +1,28 @@
+.loading {
+    background-color: black;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+    z-index: 9999;
+    opacity: 0.5;
+    transition: opacity 0.5s ease-out;
+}
 
+.loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #6320EE;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    top: 40%;
+    left: 48%;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
