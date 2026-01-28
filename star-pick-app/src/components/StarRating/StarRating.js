@@ -2,8 +2,7 @@ import './StarRating.css';
 import { useState } from 'react';
 import Star from '../Star/Star';
 
-function StarRating({ disabled }) {
-    const [rating, setRating] = useState(0);
+function StarRating({ disabled, rating, setRating }) {
     const [hoveredStar, setHoveredStar] = useState(0);
 
     function handleHover(e, index) {

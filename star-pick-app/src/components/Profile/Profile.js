@@ -47,8 +47,8 @@ function Profile({ authChecked }) {
                                 <p className="watchText">movies this year</p>
                             </div>
                             <div className="movieCatalogContainer">
-                                <MovieCatalog categoryName="watch-again" list={favorites}/>
-                                <MovieCatalog categoryName="Avengers"/>
+                                <MovieCatalog categoryName="favorites"/>
+                                <MovieCatalog categoryName="watch-again"/>
                             </div>
                         </div>
                     ) : (

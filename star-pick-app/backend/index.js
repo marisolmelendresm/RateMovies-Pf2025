@@ -120,9 +120,11 @@ app.get("/watchedCount/:userId", (req, res) => {
   })
 });
 
+// User specific categories
+
 app.get("/users/:userId/movieCategory/watch-again", (req, res) => {
   const { userId } = req.params;
-  const query = 'SELECT DISTINCT movieId FROM watchedRecord WHERE userId = ?';
+  const query = 'SELECT DISTINCT movieId FROM watchedRecord WHERE userId = ? LIMIT 12';
 
   db.all(query, [userId], function(err, rows) {
     if (err) {
@@ -131,11 +133,52 @@ app.get("/users/:userId/movieCategory/watch-again", (req, res) => {
     }
     const movieIds = rows.map(row => row.movieId);
     res.status(200).json(movieIds);
-  })
+  });
 });
-
-app.get("/movieCategory/best-rated")
 
 app.listen(3001, () => {
   console.log("Server running on http://localhost:3001");
 });
+
+app.get("/users/:userId/movieCategory/favorites", (req, res) => {
+  const { userId } = req.params;
+  const query = 'SELECT DISTINCT movieId FROM reviews WHERE userId = ? ORDER BY star DESC LIMIT 12';
+
+  db.all(query, [userId], function(err, rows) {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Database error" });
+    }
+
+    const movieIds = rows.map(row => row.movieId);
+    res.status(200).json(movieIds);
+  });
+})
+
+// All user categories
+
+app.get("/movieCategory/best-rated", (req, res) => {
+  const query = 'SELECT DISTINCT movieId FROM reviews ORDER BY star DESC LIMIT 12';
+
+  db.all(query, function(err, rows) {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Database error" });
+    }
+    const movieIds = rows.map(row => row.movieId);
+    res.status(200).json(movieIds);
+  });
+});
+
+app.get("/movieCategory/most-watched", (req, res) => {
+  const query = 'SELECT movieId, COUNT(*) as watchedCount FROM watchedRecord GROUP BY movieId ORDER BY watchedCount DESC LIMIT 12';
+
+  db.all(query, (err, rows) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Database error" });
+    }
+    const movieIds = rows.map(row => row.movieId);
+    res.status(200).json(movieIds);
+  })
+})

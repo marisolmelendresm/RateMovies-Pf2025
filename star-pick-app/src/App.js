@@ -11,7 +11,6 @@ import { useLoading } from './context/LoadingContext';
 import { useUser } from './context/UserContext';
 
 function App() {
-  //const [loggedIn, setUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
   const { loading } = useLoading();
   const { setUser } = useUser();

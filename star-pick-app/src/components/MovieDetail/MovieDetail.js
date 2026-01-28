@@ -15,7 +15,7 @@ function MovieDetail() {
 
     const [movieDetails, setMovieDetails] = useState({});
     const [watched, setWatched] = useState(false);
-    const [stars, setStars] = useState(0);
+    const [rating, setRating] = useState(0);
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -57,9 +57,9 @@ function MovieDetail() {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         const reviewText = formData.get("review");
-        const review = {userId: user.id, movieId: movieDetails.imdbID, star: stars, text: reviewText};
+        const review = {userId: user.id, movieId: movieDetails.imdbID, star: rating, text: reviewText};
 
-        if (!stars) {
+        if (!rating) {
             setError("Please add a star rating before submitting");
             return;
         }
@@ -91,7 +91,7 @@ function MovieDetail() {
                 
                 <b className="subtitle">Rate it!</b>
                 <form className="rating" onSubmit={saveReview}>
-                    <StarRating disabled={!watched} setStars={setStars}/>
+                    <StarRating disabled={!watched} setRating={setRating} rating={rating}/>
                     <label className="hiddenLabel" htmlFor="review">Review</label>
                     <textarea
                         className={`inputBox ${watched ? '' : 'disabled'}`}

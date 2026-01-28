@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useLoading } from '../../context/LoadingContext';
 import { useUser } from '../../context/UserContext';
+import { getCategoryMovies } from '../../api/movies';
 
 function MovieCatalog({ categoryName }) {
     const [movies, setMovies] = useState([]);
@@ -10,28 +11,20 @@ function MovieCatalog({ categoryName }) {
     const { user } = useUser();
 
     useEffect(() => {
-        if (!user) return;
-        const getMovieRequest = async (imdbID) => {
-            const response = await fetch(`http://www.omdbapi.com/?i=${imdbID}&apikey=188ab898`);
-            const result = await response.json();
-            return result;
-        }
-        const getCategoryMovies = async () => {
+        if (!user || !categoryName) return;
+        const loadMovies = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`http://localhost:3001/users/${user.id}/movieCategory/${categoryName}`);
-                const result = await response.json();
-                if (response.ok) {
-                    result.length = 12;
-                    const moviePromises = await result.map(movieId => getMovieRequest(movieId));
-                    const moviesData = await Promise.all(moviePromises);
-                    setMovies(moviesData);
-                }
+                const result = await getCategoryMovies({ category: categoryName, userId: user.id })
+                setMovies(result);
+            } catch (err) {
+                console.error(err);
             } finally {
                 setLoading(false);
             }
         }
-        getCategoryMovies();
+
+        loadMovies();
     }, [categoryName, user]);
 
     return (
