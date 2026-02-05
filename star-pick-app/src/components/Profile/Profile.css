@@ -14,7 +14,7 @@
 }
 
 .name {
-    color: #FFA546;
+    color: #ff54b2;
     padding: 20px 0;
 }
 
@@ -36,8 +36,4 @@
     font-size: 60px;
     font-weight: bold;
     margin: 0;
-}
-
-.movieCatalogContainer {
-    padding: 20px 10px 0 10px;
 }

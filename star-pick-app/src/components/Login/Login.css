@@ -48,7 +48,7 @@ legend {
     margin-bottom: 5px;
 }
 
-.inputContainer input {
+input {
     padding: 10px;
     font-size: 15px;
     border-radius: 10px;
@@ -58,7 +58,7 @@ legend {
 }
 
 .signupLink {
-    color: #9D8BFB;
+    color: #fb76bf;;
 }
 
 .signupOpt {

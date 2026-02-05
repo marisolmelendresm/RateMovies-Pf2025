@@ -5,13 +5,14 @@ import Question from '../Question/Question';
 import StarRating from '../StarRating/StarRating.js';
 import { useLoading } from '../../context/LoadingContext.js';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '../../context/UserContext';
+import { useAuth } from '../../context/AuthContext.js';
+import { getMovieById } from '../../api/movies.js'
 
 function MovieDetail() {
     const navigate = useNavigate();
     const { imdbID } = useParams();
     const { setLoading } = useLoading();
-    const { user } = useUser();
+    const { user } = useAuth();
 
     const [movieDetails, setMovieDetails] = useState({});
     const [watched, setWatched] = useState(false);
@@ -19,19 +20,20 @@ function MovieDetail() {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        const getMovieRequest = async () => {
-            const url = `http://www.omdbapi.com/?i=${imdbID}&apikey=188ab898`;
+        const loadMovie = async () => {
+            
             try {
                 setLoading(true);
-                const response = await fetch(url);
-                const responseJson = await response.json();
-                setMovieDetails(responseJson);
+                const result = await getMovieById({ imdbID });
+                setMovieDetails(result);
+            } catch(err) {
+                console.error("Error fetching movie", err)
             } finally {
                 setLoading(false);
             }
         };
 
-        getMovieRequest();
+        loadMovie();
     }, [imdbID]);
 
     const recordWatch = async () => {
@@ -81,12 +83,14 @@ function MovieDetail() {
         }
     }
 
+    
+
     return (
         <div className="movieDetail">
             <div className="moviePosterContainer"><img className="moviePoster" src={movieDetails.Poster}></img></div>
             <div className="movieInfo">
-                <h1 className="movieTitle header">{movieDetails.Title}</h1>
-                <h2 className="movieYear header">{movieDetails.Year}</h2>
+                <h2 className="movieTitle header">{movieDetails.Title}</h2>
+                <p className="movieYear header">{movieDetails.Year}</p>
                 <Question checked={watched} onClick={recordWatch}/>
                 
                 <b className="subtitle">Rate it!</b>

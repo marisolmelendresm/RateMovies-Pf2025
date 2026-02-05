@@ -1,16 +1,15 @@
 .header {
     padding-left: 0;
-    margin: 0;
 }
 
 .movieTitle {
-    font-size: 45px;
-    margin: 0;
+    padding: 0 0 0 0;
 }
 
 .movieYear {
     font-size: 30px;
     font-weight: normal;
+    margin: 0;
 }
 
 .subtitle {

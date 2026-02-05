@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLoading } from '../../context/LoadingContext';
-import { useUser } from '../../context/UserContext';
+import { useAuth } from '../../context/AuthContext';
 import './Login.css';
 
 function Login() {
     const [error, setError] = useState(null);
     const { setLoading } = useLoading();
-    const { setUser } = useUser();
+    const { login } = useAuth();
 
     const navigate = useNavigate();
     const delay = (ms) =>
@@ -34,9 +34,8 @@ function Login() {
         if (!response.ok) {
             setError(result.message);
         } else {
-            const user = result.user;
-            setUser(user);
-            localStorage.setItem("user", JSON.stringify(user));
+            const token = result.token;
+            login(token);
             setError(null);
             try {
                 setLoading(true);

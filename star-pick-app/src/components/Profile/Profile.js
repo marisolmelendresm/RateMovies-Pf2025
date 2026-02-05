@@ -2,39 +2,30 @@ import { Navigate } from 'react-router-dom';
 import MovieCatalog from '../MovieCatalog/MovieCatalog';
 import './Profile.css';
 import { useEffect, useState } from 'react';
-import { useUser } from '../../context/UserContext';
+import { useAuth } from '../../context/AuthContext';
+import { getWatchedCountReq } from '../../api/movies';
 
-function Profile({ authChecked }) {
-    const [favorites, setFavorites] = useState([]);
+function Profile() {
     const [watched, setWatched] = useState(0);
-    const { user } = useUser();
+    const { token, user } = useAuth();
 
     useEffect(() => {
         const getWatchedCount = async () => {
-            if (!user) return;
+            if (!token) return;
 
             try {
-                const response = await fetch(`http://localhost:3001/watchedCount/${user.id}`);
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    console.error(result.message);
-                    return;
-                }
-                
+                const result = await getWatchedCountReq({ token: token });
                 setWatched(result.count);
             } catch(err) {
                 console.error("Failed to fetch watched count");
             }
         }
-
         getWatchedCount();
-    }, [user]);
+    }, [token]);
 
     return (
             <div>
-                {authChecked ? (
+                { token ? 
                     user ? (
                         <div>
                             <div className="greetingContainer">
@@ -46,19 +37,14 @@ function Profile({ authChecked }) {
                                 <p className="watchCount">{watched}</p>
                                 <p className="watchText">movies this year</p>
                             </div>
-                            <div className="movieCatalogContainer">
                                 <MovieCatalog categoryName="favorites"/>
                                 <MovieCatalog categoryName="watch-again"/>
-                            </div>
                         </div>
                     ) : (
                         <Navigate to="/login" replace />
                     )
-                    ) : (
-                        null
-                    )
+                    : null
                 }
-                
             </div>
     );
 }

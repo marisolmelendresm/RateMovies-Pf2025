@@ -1,14 +1,13 @@
-import { useState } from "react";
 import MovieCatalog from "../MovieCatalog/MovieCatalog";
 import './Home.css';
 
-function Home({ onLoad }) {
+function Home() {
 
     return (
         <div>
             <h2 className="homeTitle">Let them know your take!</h2>
-            <MovieCatalog categoryName="most-watched" onLoad={onLoad}></MovieCatalog>
-            <MovieCatalog categoryName="best-rated" onLoad={onLoad}></MovieCatalog>
+            <MovieCatalog categoryName="most-watched"></MovieCatalog>
+            <MovieCatalog categoryName="best-rated"></MovieCatalog>
         </div>
     )
 }

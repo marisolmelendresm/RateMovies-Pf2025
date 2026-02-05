@@ -2,13 +2,13 @@ import './NavBar.css';
 import { NavLink } from 'react-router-dom';
 import arrowDown from '../../assets/arrow-down.png';
 import { useState, useRef, useEffect } from 'react';
-import { useUser } from '../../context/UserContext';
+import { useAuth } from '../../context/AuthContext';
 
 function NavBar() {
     const [dropdown, setDropdown] = useState(false);
     const dropdownRef = useRef(null);
 
-    const { user, setUser  } = useUser();
+    const { user, logout  } = useAuth();
 
     function getInitials(name) {
         const names = name.split(' ').slice(0, 2);
@@ -21,10 +21,9 @@ function NavBar() {
         setDropdown(prev => !prev);
     }
 
-    function logout(e) {
+    function clickLogout(e) {
         toggleMenu(e);
-        setUser(null);
-        localStorage.removeItem("user");
+        logout();
     }
 
     useEffect(() => {
@@ -58,14 +57,14 @@ function NavBar() {
                     <div ref={dropdownRef} className={dropdown ? "dropdown dropdownOpen" : "dropdown"}>
                         <div className="dropdownContent">
                             <div className="userInfo">
-                                <h2 className="dropdownName">{user.fullName}</h2>
+                                <h2 className="dropdownName">{user.fullName.split(' ').slice(0, 2).join(' ')}</h2>
                                 <p className="username">{`@${user.username}`}</p>
                             </div>
                             <hr className="divider"></hr>
                             <div className="dropdownLinks">
                                 <NavLink to='/profile' className="navLink padding" onClick={toggleMenu}>Profile</NavLink>
                                 <NavLink to='/settings' className="navLink padding" onClick={toggleMenu}>Settings</NavLink>
-                                <NavLink to='/login' className="navLink padding" onClick={logout}>Logout</NavLink>
+                                <NavLink to='/login' className="navLink padding" onClick={clickLogout}>Logout</NavLink>
                             </div>
                         </div>
                     </div>

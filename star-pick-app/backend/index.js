@@ -2,8 +2,11 @@ const db = require("./database");
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const app = express();
+const SECRET = process.env.JWT_SECRET;
 
 app.use(express.json());
 app.use(cors());
@@ -12,8 +15,24 @@ app.get("/", (req, res) => {
   res.send("Backend is alive");
 });
 
+function auth(req, res, next) {
+  const header = req.headers.authorization;
+
+  if (!header) return res.status(401).json({ error: "No token" });
+
+  const token = header.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, SECRET);
+    req.user = decoded;
+    next();
+  } catch(err) {
+    console.error(err);
+    res.status(403).json({ error: "Invalid token" });
+  }
+}
+
 app.post("/signup", async (req, res) => {
-  console.log(req.body);
   try {
     const { fullName, username, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -58,14 +77,12 @@ app.post("/login", (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
     
-    res.status(200).json({ 
-      message: "Login successful", 
-      user: {
-        id: user.id,
-        fullName: user.fullname, 
-        email: user.email, 
-        username: user.username
-      } });
+    const token = jwt.sign(
+      {id: user.id, fullName: user.fullname, username: user.username, email: user.email},
+      SECRET,
+      {expiresIn: "1h"}
+    )
+    res.status(200).json({ token });
   })
 });
 
@@ -107,9 +124,9 @@ app.post("/review", (req, res) => {
   }
 });
 
-app.get("/watchedCount/:userId", (req, res) => {
-  const { userId } = req.params;
-  const query = `SELECT COUNT(*) AS watchedCount FROM watchedRecord WHERE userId = ?`;
+app.get("/users/watchedCount", auth, (req, res) => {
+  const userId = req.user.id;
+  const query = `SELECT COUNT(*) AS watchedCount FROM watchedRecord WHERE userId = ? AND date >= '2026-01-01' AND date < '2027-01-01'`;
   
   db.get(query, [userId], function(err, row) {
     if (err) {
@@ -122,8 +139,8 @@ app.get("/watchedCount/:userId", (req, res) => {
 
 // User specific categories
 
-app.get("/users/:userId/movieCategory/watch-again", (req, res) => {
-  const { userId } = req.params;
+app.get("/users/movieCategory/watch-again", auth, (req, res) => {
+  const userId = req.user.id;
   const query = 'SELECT DISTINCT movieId FROM watchedRecord WHERE userId = ? LIMIT 12';
 
   db.all(query, [userId], function(err, rows) {
@@ -140,8 +157,8 @@ app.listen(3001, () => {
   console.log("Server running on http://localhost:3001");
 });
 
-app.get("/users/:userId/movieCategory/favorites", (req, res) => {
-  const { userId } = req.params;
+app.get("/users/movieCategory/favorites", auth, (req, res) => {
+  const userId = req.user.id;
   const query = 'SELECT DISTINCT movieId FROM reviews WHERE userId = ? ORDER BY star DESC LIMIT 12';
 
   db.all(query, [userId], function(err, rows) {

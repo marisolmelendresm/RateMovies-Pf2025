@@ -22,6 +22,14 @@
     left: 48%;
 }
 
+h2 {
+    margin: 0;
+    font-size: 45px;
+    font-weight: bold;
+    text-shadow:  0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 50px 0 20px 0 ;
+}
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }

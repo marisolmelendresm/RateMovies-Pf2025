@@ -6,15 +6,15 @@ import { LoadingProvider } from './context/LoadingContext';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { UserProvider } from './context/UserContext';
+import { AuthProvider } from './context/AuthContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <LoadingProvider>
-      <UserProvider>
+      <AuthProvider>
         <App />
-      </UserProvider>
+      </AuthProvider>
     </LoadingProvider>
   </BrowserRouter>
 );
