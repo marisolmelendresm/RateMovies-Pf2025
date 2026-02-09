@@ -15,6 +15,10 @@ app.get("/", (req, res) => {
   res.send("Backend is alive");
 });
 
+app.listen(3001, () => {
+  console.log("Server running on http://localhost:3001");
+});
+
 function auth(req, res, next) {
   const header = req.headers.authorization;
 
@@ -37,23 +41,24 @@ app.post("/signup", async (req, res) => {
     const { fullName, username, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const query = `INSERT INTO users (fullname, username, email, password)
-    VALUES (?, ?, ?, ?)`
+    VALUES (?, ?, ?, ?)`;
 
     db.run(query, [fullName, username, email, hashedPassword], function(err) {
       if (err) {
         if (err.message.includes('UNIQUE')) {
           return res.status(409).json({message: "Username or email already exists"});
         }
+        console.error("Signup DB error: ", err);
         return res.status(500).json({message: "Database error"});
       }
 
-      res.status(201).json({
-        message: "User created successfully",
-        userId: this.lastID,
+      return res.status(201).json({
+        message: "User created successfully"
       });
     })
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error("Password hashing error: ", err);
+    return res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -64,6 +69,7 @@ app.post("/login", (req, res) => {
 
   db.get(query, [username], async (err, user) => {
     if (err) {
+      console.error("Login DB error: ", err);
       return res.status(500).json({message: "Database error"});
     }
 
@@ -71,57 +77,58 @@ app.post("/login", (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    try {
+      const isMatch = await bcrypt.compare(password, user.password);
     
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      if (!isMatch) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      const token = jwt.sign(
+        {id: user.id, fullName: user.fullname, username: user.username, email: user.email},
+        SECRET,
+        {expiresIn: "1h"}
+      )
+      return res.status(200).json({ token, message: "Successful login" });
+
+    } catch(err) {
+      console.error("Password comparison error: ", err);
+      return res.status(500).json({message: "Server error"});
     }
-    
-    const token = jwt.sign(
-      {id: user.id, fullName: user.fullname, username: user.username, email: user.email},
-      SECRET,
-      {expiresIn: "1h"}
-    )
-    res.status(200).json({ token });
   })
 });
 
-app.post("/watched", (req, res) => {
-  const { userId, movieId } = req.body;
+app.post("/users/watched", auth, (req, res) => {
+  const userId = req.user.id;
+  const { movieId } = req.body;
   const query = `INSERT INTO watchedRecord (userId, movieId)
-  VALUES (?, ?)`
-  try {
-    db.run(query, [userId, movieId], function(err) {
-      if (err) {
-        return res.status(500).json({message: "Database error"});
-      }
-      res.status(201).json({message: "Watched record saved"});
-    })
-  } catch {
-    res.status(500).json({message: "Server error"});
-  }
-  
-})
+  VALUES (?, ?)`;
+  db.run(query, [userId, movieId], function(err) {
+    if (err) {
+      console.error("Watched DB error: ", err);
+      return res.status(500).json({message: "Database error"});
+    }
+    return res.status(201).json({message: "Watched record saved"});
+  });
+});
 
-app.post("/review", (req, res) => {
-  try {
-    const { userId, movieId, star, text } = req.body;
-    console.log("Received request", userId, movieId, star, text);
+app.post("/users/review", auth, (req, res) => {
+  const userId = req.user.id;
+  const { movieId, star, text } = req.body;
+  console.log("Received review request", userId, movieId, star, text);
 
-    const query = `INSERT INTO reviews (userId, movieId, star, text)
-    VALUES (?, ?, ?, ?)`;
+  const query = `INSERT INTO reviews (userId, movieId, star, text)
+  VALUES (?, ?, ?, ?)`;
 
-    db.run(query, [userId, movieId, star, text], function(err) {
-      if (err) {
-        return res.status(500).json({message: "Database error"});
-      }
-      res.status(201).json({
-        message: "Review saved"
-      });
-    })
-  } catch (err) {
-    res.status(500).json({message: "Server error"});
-  }
+  db.run(query, [userId, movieId, star, text], function(err) {
+    if (err) {
+      console.error("Save review DB error");
+      return res.status(500).json({message: "Database error"});
+    }
+    return res.status(201).json({
+      message: "Review saved"
+    });
+  });
 });
 
 app.get("/users/watchedCount", auth, (req, res) => {
@@ -130,10 +137,10 @@ app.get("/users/watchedCount", auth, (req, res) => {
   
   db.get(query, [userId], function(err, row) {
     if (err) {
-      console.error(err);
+      console.error("Watch count DB error: ", err);
       return res.status(500).json({ message: "Database error" });
     }
-    res.status(200).json({count: row.watchedCount});
+    return res.status(200).json({count: row.watchedCount});
   })
 });
 
@@ -145,16 +152,12 @@ app.get("/users/movieCategory/watch-again", auth, (req, res) => {
 
   db.all(query, [userId], function(err, rows) {
     if (err) {
-      console.error(err);
+      console.error("Watch Again Category DB error: ", err);
       return res.status(500).json({ message: "Database error" });
     }
     const movieIds = rows.map(row => row.movieId);
-    res.status(200).json(movieIds);
+    return res.status(200).json(movieIds);
   });
-});
-
-app.listen(3001, () => {
-  console.log("Server running on http://localhost:3001");
 });
 
 app.get("/users/movieCategory/favorites", auth, (req, res) => {
@@ -163,7 +166,7 @@ app.get("/users/movieCategory/favorites", auth, (req, res) => {
 
   db.all(query, [userId], function(err, rows) {
     if (err) {
-      console.error(err);
+      console.error("Favorites Category DB error: ", err);
       return res.status(500).json({ message: "Database error" });
     }
 
@@ -179,7 +182,7 @@ app.get("/movieCategory/best-rated", (req, res) => {
 
   db.all(query, function(err, rows) {
     if (err) {
-      console.error(err);
+      console.error("Best Rated Category DB error: ", err);
       return res.status(500).json({ message: "Database error" });
     }
     const movieIds = rows.map(row => row.movieId);
@@ -192,7 +195,7 @@ app.get("/movieCategory/most-watched", (req, res) => {
 
   db.all(query, (err, rows) => {
     if (err) {
-      console.error(err);
+      console.error("Most Watched Category DB error: ", err);
       return res.status(500).json({ message: "Database error" });
     }
     const movieIds = rows.map(row => row.movieId);

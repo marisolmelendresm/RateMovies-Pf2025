@@ -15,14 +15,14 @@ function MovieCatalog({ categoryName, search, orientation }) {
     }
 
     useEffect(() => {
-        if (!token || !categoryName) return;
+        if (!categoryName) return;
         const loadMovies = async () => {
             try {
                 setLoading(true);
                 const result = await getMovies({ category: categoryName, token: token,  value: search });
                 setMovies(result);
             } catch (err) {
-                console.error(err);
+                console.error("Failed loading movies", err);
             } finally {
                 setLoading(false);
             }

@@ -22,29 +22,34 @@ function Login() {
             password: formData.get("password")
         };
 
-        const response = await fetch("http://localhost:3001/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        });
+        try {
+            const response = await fetch("http://localhost:3001/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
 
-        const result = await response.json();
-        if (!response.ok) {
-            setError(result.message);
-        } else {
-            const token = result.token;
-            login(token);
-            setError(null);
-            try {
-                setLoading(true);
-                await delay(800);
-                navigate("/profile");
-            } finally {
-                setLoading(false);
+            const result = await response.json();
+            if (!response.ok) {
+                setError(result.message);
+            } else {
+                const token = result.token;
+                login(token);
+                setError(null);
+                try {
+                    setLoading(true);
+                    await delay(800);
+                    navigate("/profile");
+                } finally {
+                    setLoading(false);
+                }
+                
             }
-            
+        } catch(err) {
+            setError("Something went wrong. Please try again later");
+            console.error("Login failed: ", err);
         }
     }
 

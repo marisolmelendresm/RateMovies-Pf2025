@@ -1,6 +1,4 @@
 import './Question.css';
-import grayCheckmark from '../../assets/checkmark-gray.png';
-import greenCheckmark from '../../assets/checkmark-green.png';
 import CheckIcon from '../CheckIcon/CheckIcon';
 
 function Question({ checked = false, onClick }) {

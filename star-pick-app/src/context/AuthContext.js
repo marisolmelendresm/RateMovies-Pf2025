@@ -18,6 +18,7 @@ export function AuthProvider({ children }) {
             try {
                 const decoded = jwtDecode(storedToken);
                 if (isTokenExpired(decoded)) {
+                    console.error("Token expired");
                     localStorage.removeItem("token");
                     setLoggedOutMsg("Session Expired, please login again");
                     return;
@@ -26,7 +27,7 @@ export function AuthProvider({ children }) {
                 setToken(storedToken);
                 setUser(decoded);
             } catch (err) {
-                console.error('Invalid token');
+                console.error("Invalid token: ", err);
                 setLoggedOutMsg("Logged out");
                 localStorage.removeItem("token");
             }

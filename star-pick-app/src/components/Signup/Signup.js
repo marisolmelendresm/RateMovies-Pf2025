@@ -23,26 +23,38 @@ function Signup() {
             password: formData.get("password")
         };
 
-        const response = await fetch("http://localhost:3001/signup", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        });
+        try {
+            const response = await fetch("http://localhost:3001/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
 
-        const result = await response.json();
-        if (!response.ok) {
-            setError(result.message);
-        } else {
-            try {
-                setError(null);
-                setLoading(true);
-                await delay(700);
-                navigate("/login");
-            } finally {
-                setLoading(false);
+            const result = await response.json();
+            if (!response.ok) {
+                if (response.status === 409) {
+                    setError(result.message);
+                    return;
+                }
+
+                console.error("Unexpected error: ", result)
+                setError("Something went wrong. Please try again later");
+                return;
+            } else {
+                try {
+                    setError(null);
+                    setLoading(true);
+                    await delay(700);
+                    navigate("/login");
+                } finally {
+                    setLoading(false);
+                }
             }
+        } catch(err) {
+            setError("Something went wrong. Please try again later");
+            console.error("Signup failed: ", err);
         }
     }
 

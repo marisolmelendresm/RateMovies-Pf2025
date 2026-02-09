@@ -1,5 +1,5 @@
 import './Search.css';
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import MovieCatalog from '../MovieCatalog/MovieCatalog';
 
 export default function Search() {
