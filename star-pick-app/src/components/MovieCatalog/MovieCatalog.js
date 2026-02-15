@@ -8,7 +8,7 @@ import { getMovies } from '../../api/movies';
 function MovieCatalog({ categoryName, search, orientation }) {
     const [movies, setMovies] = useState([]);
     const { setLoading } = useLoading();
-    const { token } = useAuth();
+    const { token, logout } = useAuth();
 
     if (!orientation) {
         orientation = 'horizontal';
@@ -19,7 +19,7 @@ function MovieCatalog({ categoryName, search, orientation }) {
         const loadMovies = async () => {
             try {
                 setLoading(true);
-                const result = await getMovies({ category: categoryName, token: token,  value: search });
+                const result = await getMovies({ category: categoryName, token: token,  value: search }, logout);
                 setMovies(result);
             } catch (err) {
                 console.error("Failed loading movies", err);
@@ -44,7 +44,7 @@ function MovieCatalog({ categoryName, search, orientation }) {
                         return (
                             <li key={movie.imdbID}>
                                 <Link to={`/movie/${movie.imdbID}`}>
-                                    <img src={movie.Poster} alt={`${movie.Title} poster`}></img>
+                                    <img className="catalogPoster poster" src={movie.Poster} alt={`${movie.Title} poster`}></img>
                                 </Link>
                             </li>
                             )

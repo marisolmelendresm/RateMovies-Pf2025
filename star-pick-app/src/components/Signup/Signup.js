@@ -1,7 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import './Signup.css';
 import { useState } from 'react';
 import { useLoading } from '../../context/LoadingContext';
+
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
+
+import './Signup.css';
 
 function Signup() {
     const [error, setError] = useState(null);
@@ -114,7 +117,7 @@ function Signup() {
                         />
                     </div>
                 </fieldset>
-                {error && <p className="errorMessage" aria-live="polite">{error}</p>}
+                {error && <ErrorMessage message={error}/>}
                 <button type="submit" className="signupButton">Sign Up</button>
             </form>
             <p className="loginOpt">Already have an account? <a className="loginLink" href="/login">Log in</a></p>

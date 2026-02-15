@@ -74,18 +74,3 @@ input {
 .loginButton {
     margin-top: 15px;
 }
-
-.errorMessage {
-  margin: 0;
-  padding: 10px;
-  border-radius: 6px;
-  text-align: center;
-  width: 300px;
-
-  color: #991b1b;
-  background-color: #fee4e2;
-  border: 1px solid #fecaca;
-
-  font-size: 0.95rem;
-  font-weight: 500;
-}

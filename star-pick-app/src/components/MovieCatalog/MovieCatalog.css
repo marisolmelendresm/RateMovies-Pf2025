@@ -26,12 +26,8 @@
     height: 300px;
 }
 
-.posterList img {
+.catalogPoster {
     width: 200px;
-    height: 100%;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .posterList img:hover {

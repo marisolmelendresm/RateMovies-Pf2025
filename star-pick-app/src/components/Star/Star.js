@@ -1,10 +1,10 @@
 import './Star.css';
 
 
-function Star({ fill = 0, onHover, onClick, disabled }) {
+function Star({ fill = 0, onHover, onClick, disabled, size }) {
   return (
     <div
-      className={`star ${disabled ? 'disabled' : 'enabled'}`}
+      className={`star ${disabled ? 'disabled' : ''} ${size}`}
       onMouseMove={onHover}
       onClick={onClick}
     >
@@ -12,15 +12,11 @@ function Star({ fill = 0, onHover, onClick, disabled }) {
         <defs>
           <linearGradient id={`grad-${fill}`}>
             <stop offset={`${fill}%`} stopColor="#FFD700" />
-            <stop offset={`${fill}%`} stopColor="#e5e7eb" />
+            <stop offset={`${fill}%`} stopColor={disabled ? "#363636ff" : "#e5e7eb"} />
           </linearGradient>
         </defs>
         <path
-          fill= {
-          disabled
-            ? "#363636ff"
-            : `url(#grad-${fill})`
-          }
+          fill= {`url(#grad-${fill})`}
           d="M12 2.5
             C12.3 2.5 12.6 2.7 12.8 3.1
             L15.5 8.6

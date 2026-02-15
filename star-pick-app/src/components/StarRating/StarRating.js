@@ -2,7 +2,7 @@ import './StarRating.css';
 import { useState } from 'react';
 import Star from '../Star/Star';
 
-function StarRating({ disabled, rating, setRating }) {
+function StarRating({ disabled, rating, setRating, size = 'L' }) {
     const [hoveredStar, setHoveredStar] = useState(0);
 
     function handleHover(e, index) {
@@ -34,16 +34,25 @@ function StarRating({ disabled, rating, setRating }) {
                         }
                         onHover={(e) => handleHover(e, i)}
                         onClick={() => setRating(hoveredStar)}
+                        size={size}
                     />
                     ))}
                 </div>
             ) : (
                 <div className="starRating">
                     {[0, 1, 2, 3, 4].map((i) => (
-                    <Star
-                        disabled={disabled}
-                        key={i}
-                    />
+                        <div className={`starContainer ${size}`}>
+                            <Star
+                                disabled={disabled}
+                                key={i}
+                                fill={
+                                    rating >= i + 1 ? 100
+                                    : rating >= i + 0.5 ? 50
+                                    : 0
+                                }
+                                size={size}
+                            />
+                        </div>
                     ))}
                 </div>
             )}

@@ -8,12 +8,13 @@ import { useLoading } from '../../context/LoadingContext.js';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.js';
 import { getMovieById } from '../../api/movies.js'
+import ErrorMessage from '../ErrorMessage/ErrorMessage.js';
 
 function MovieDetail() {
     const navigate = useNavigate();
     const { imdbID } = useParams();
     const { setLoading } = useLoading();
-    const { token } = useAuth();
+    const { token, user, setLoggedOutMsg, authChecked, logout } = useAuth();
 
     const [movieDetails, setMovieDetails] = useState({});
     const [watched, setWatched] = useState(false);
@@ -21,11 +22,14 @@ function MovieDetail() {
     const [error, setError] = useState('');
 
     useEffect(() => {
+        if (authChecked && !token) setLoggedOutMsg("Please login to rate a movie");
+
         const loadMovie = async () => {
             
             try {
+                setError(null);
                 setLoading(true);
-                const result = await getMovieById({ imdbID });
+                const result = await getMovieById({ imdbID }, logout);
                 setMovieDetails(result);
             } catch(err) {
                 setError("Could not load movie. Please try again later");
@@ -36,7 +40,7 @@ function MovieDetail() {
         };
 
         loadMovie();
-    }, [imdbID]);
+    }, [imdbID, authChecked, token]);
 
     const recordWatch = async () => {
         const watchRecord = {movieId: imdbID};
@@ -72,11 +76,6 @@ function MovieDetail() {
         const reviewText = formData.get("review");
         const review = {movieId: movieDetails.imdbID, star: rating, text: reviewText};
 
-        if (!rating) {
-            setError("Please add a star rating before submitting");
-            return;
-        }
-
         try {
             setLoading(true)
             const response = await fetch("http://localhost:3001/users/review", {
@@ -103,43 +102,45 @@ function MovieDetail() {
         }
     };
 
-    const navigateLogin = () => {
-        setError("Please log in to rate a movie");
-    };
-
     
 
     return (
         <div>
-            { token ? 
-                <div className="movieDetail">
-                    <div className="moviePosterContainer"><img className="moviePoster" src={movieDetails.Poster}></img></div>
-                    <div className="movieInfo">
-                        <h2 className="movieTitle header">{movieDetails.Title}</h2>
-                        <p className="movieYear header">{movieDetails.Year}</p>
-                        <Question checked={watched} onClick={recordWatch}/>
-                        
-                        <b className="subtitle">Rate it!</b>
-                        <form className="rating" onSubmit={saveReview}>
-                            <StarRating disabled={!watched} setRating={setRating} rating={rating}/>
-                            <label className="hiddenLabel" htmlFor="review">Review</label>
-                            <textarea
-                                className={`inputBox ${watched ? '' : 'disabled'}`}
-                                disabled={!watched}
-                                id="review"
-                                name="review"
-                                placeholder="Write your take"
-                            ></textarea>
-                            {error && <p className="errorMessage" aria-live="polite">{error}</p>}
-                            <button disabled={!watched} className={`saveReviewButton ${watched ? '' : 'disabled'}`} type="submit">Save</button>
-                        </form>
-                    </div>
-                </div> 
-            : 
-            <div>
-                {navigateLogin}
-                <Navigate to="/login" replace />
-            </div>
+            { authChecked ? 
+                token ? 
+                    user ?
+                        (<div className="movieDetail">
+                            { error && <ErrorMessage message={error} position='top-right' closeMessage={() => setError(null)}></ErrorMessage>}
+                            <div className="moviePosterContainer">
+                                <img className="moviePoster poster" src={movieDetails.Poster}></img>
+                            </div>
+                            <div className="movieInfo">
+                                <h2 className="movieTitle header">{movieDetails.Title}</h2>
+                                <p className="movieYear header">{movieDetails.Year}</p>
+                                <Question checked={watched} onClick={recordWatch}/>
+                                
+                                <b className="subtitle">Rate it!</b>
+                                <form className="rating" onSubmit={saveReview}>
+                                    <StarRating disabled={!watched} setRating={setRating} rating={rating}/>
+                                    <label className="hiddenLabel" htmlFor="review">Review</label>
+                                    <textarea
+                                        className={`inputBox ${watched ? '' : 'disabled'}`}
+                                        disabled={!watched}
+                                        id="review"
+                                        name="review"
+                                        placeholder="Write your take"
+                                        maxLength="200"
+                                    ></textarea>
+                                    <button disabled={!watched} className={`saveReviewButton ${watched ? '' : 'disabled'}`} type="submit">Save</button>
+                                </form>
+                            </div>
+                        </div>)
+                        : 
+                            <Navigate to="/login" replace />
+                    :
+                        <Navigate to="/login" replace />
+                :
+                    null
             }
         </div>
     )

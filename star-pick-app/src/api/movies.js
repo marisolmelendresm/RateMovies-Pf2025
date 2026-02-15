@@ -1,12 +1,12 @@
+import { authFetch } from "./auth";
 
-
-export async function getMovieById({ imdbID }) {
+export async function getMovieById({ imdbID }, logout) {
     try {
-        const response = await fetch(`https://www.omdbapi.com/?i=${imdbID}&apikey=188ab898`);
+        const response = await authFetch(`https://www.omdbapi.com/?i=${imdbID}&apikey=188ab898`, {}, logout);
         const result = await response.json();
         return result;
     } catch(err) {
-        throw new Error("OMDb fetch failed");
+        throw new Error(`OMDb fetch failed: ${err}`);
     } 
 }
 
@@ -27,7 +27,7 @@ async function getMoviesBySearch({ search }) {
     }
 }
 
-export async function getMoviesByCategory({ category, token }) {
+export async function getMoviesByCategory({ category, token }, logout) {
     let url;
 
     if (category === "watch-again" || category === "favorites") {
@@ -39,12 +39,12 @@ export async function getMoviesByCategory({ category, token }) {
     if (!url) return [];
     
     try {
-        const response = await fetch(url, {
+        const response = await authFetch(url, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`
             }
-        });
+        }, logout);
         if (response.ok) {
             const result = await response.json();
             const moviePromises = result.map(movieId => getMovieById({ imdbID: movieId}));
@@ -61,24 +61,24 @@ export async function getMoviesByCategory({ category, token }) {
     
 }
 
-export async function getMovies({ category, token, value }) {
+export async function getMovies({ category, token, value }, logout) {
     if (value) {
-        return getMoviesBySearch({ search: value });
+        return getMoviesBySearch({ search: value }, logout);
     } else {
-        return getMoviesByCategory({ category: category, token: token });
+        return getMoviesByCategory({ category: category, token: token }, logout);
     }
 }
 
-export async function getWatchedCountReq({ token }) {
+export async function getWatchedCountReq({ token }, logout) {
     if (!token) return;
 
     try {
-        const response = await fetch(`http://localhost:3001/users/watchedCount`, {
+        const response = await authFetch(`http://localhost:3001/users/watchedCount`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${token}`
             }
-        });
+        }, logout);
 
         const result = await response.json();
         if (!response.ok) {

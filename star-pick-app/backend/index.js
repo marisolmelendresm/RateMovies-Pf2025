@@ -87,7 +87,7 @@ app.post("/login", (req, res) => {
       const token = jwt.sign(
         {id: user.id, fullName: user.fullname, username: user.username, email: user.email},
         SECRET,
-        {expiresIn: "1h"}
+        {expiresIn: "2h"}
       )
       return res.status(200).json({ token, message: "Successful login" });
 
@@ -141,6 +141,19 @@ app.get("/users/watchedCount", auth, (req, res) => {
       return res.status(500).json({ message: "Database error" });
     }
     return res.status(200).json({count: row.watchedCount});
+  })
+});
+
+app.get("/users/reviews", auth, (req, res) => {
+  const userId = req.user.id;
+  const query = 'SELECT movieId, star, text, date FROM reviews WHERE userId = ?';
+
+  db.all(query, [userId], function(err, rows) {
+    if (err) {
+      console.error("Reviews DB error: ", err);
+      return res.status(500).json({ message: "Database error" });
+    }
+    return res.status(200).json(rows)
   })
 });
 

@@ -8,7 +8,7 @@ function NavBar() {
     const [dropdown, setDropdown] = useState(false);
     const dropdownRef = useRef(null);
 
-    const { user, logout  } = useAuth();
+    const { user, token, logout  } = useAuth();
 
     function getInitials(name) {
         const names = name.split(' ').slice(0, 2);
@@ -50,7 +50,7 @@ function NavBar() {
             </div>
 
             <h1 className="navBarCenter">Star Pick</h1>
-            {user ? (
+            {token && user ? (
                 <div className="navBar-right">
                     <div className="initials" onClick={toggleMenu}>{getInitials(user.fullName)}</div>
                     <img className="arrow" src={arrowDown} alt="Profile options dropdown" onClick={toggleMenu}></img>

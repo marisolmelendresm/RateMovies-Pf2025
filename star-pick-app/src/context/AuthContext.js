@@ -7,32 +7,69 @@ export function AuthProvider({ children }) {
     const [token, setToken] = useState(null);
     const [user, setUser] = useState(null);
     const [loggedOutMsg, setLoggedOutMsg] = useState(null);
+    const [authChecked, setAuthChecked] = useState(false);
+
+    useEffect(() => {
+        if (!token) return;
+
+        const decoded = jwtDecode(token);
+
+        const expirationTime = decoded.exp * 1000;
+        const currentTime = Date.now();
+
+        const timeout = expirationTime - currentTime;
+
+        if (timeout <= 0) {
+            logout("Session expired, please login again");
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            logout("Session expired, please login again");
+        }, timeout);
+
+        return () => clearTimeout(timer);
+
+    }, [token]);
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem("token");
+        if (!storedToken) return;
+
+        try {
+            const decoded = jwtDecode(storedToken);
+            setUser(decoded);
+            setToken(storedToken);
+        } catch {
+            localStorage.removeItem("token");
+        }
+
+        setAuthChecked(true);
+    }, []);
 
     function isTokenExpired(decodedToken) {
         return decodedToken.exp * 1000 < Date.now();
     }
 
     useEffect(() => {
-        const storedToken = localStorage.getItem("token");
-        if (storedToken) {
+        const handleFocus = () => {
+            const storedToken = localStorage.getItem("token");
+            if (!storedToken) return;
+
             try {
                 const decoded = jwtDecode(storedToken);
+
                 if (isTokenExpired(decoded)) {
-                    console.error("Token expired");
-                    localStorage.removeItem("token");
-                    setLoggedOutMsg("Session Expired, please login again");
-                    return;
+                    logout("Session expired, please login again");
                 }
-
-                setToken(storedToken);
-                setUser(decoded);
-            } catch (err) {
-                console.error("Invalid token: ", err);
-                setLoggedOutMsg("Logged out");
-                localStorage.removeItem("token");
+            } catch {
+                logout("Invalid session");
             }
-        }
+        };
 
+        window.addEventListener("focus", handleFocus);
+
+        return () => window.removeEventListener("focus", handleFocus);
     }, []);
 
     function login(newToken) {
@@ -42,15 +79,15 @@ export function AuthProvider({ children }) {
         setUser(jwtDecode(newToken));
     }
 
-    function logout() {
+    function logout(message) {
         localStorage.removeItem("token");
-        setLoggedOutMsg("Logged out");
         setToken(null);
         setUser(null);
+        setLoggedOutMsg(message);
     }
 
     return (
-        <AuthContext.Provider value={{user, token, loggedOutMsg, login, logout}}>
+        <AuthContext.Provider value={{authChecked, user, token, loggedOutMsg, login, logout, setLoggedOutMsg}}>
             {children}
         </AuthContext.Provider>
     )

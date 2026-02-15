@@ -37,3 +37,28 @@
     font-weight: bold;
     margin: 0;
 }
+
+.profileTabs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    padding-top: 30px;
+    
+    border-bottom: 0.5px solid rgb(53, 53, 53);
+    cursor: pointer;
+}
+
+.tab {
+    background-color: rgb(53, 53, 53);
+    color: white;
+
+    padding: 10px;
+    border-radius: 10px 10px 0 0;
+}
+
+.tab.active {
+    background-color: rgb(87, 87, 87);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}

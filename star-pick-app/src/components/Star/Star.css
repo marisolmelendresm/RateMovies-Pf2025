@@ -1,16 +1,20 @@
-.star {
-  width: 50px;
+.star.L {
+    width: 50px;
 }
 
-.star.enabled {
+.star.S {
+    width: 35px;
+}
+
+.star:not(.disabled) {
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
 }
 
-.star.enabled:hover {
+.star:not(.disabled):hover {
   transform: scale(1.15);
 }
 
-.star svg {
+.star:not(.disabled) svg {
   display: block;
 }

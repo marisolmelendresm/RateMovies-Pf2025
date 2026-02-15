@@ -1,0 +1,15 @@
+.reviewList {
+    padding: 15px;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+    gap: 20px;
+    margin: 0 auto;
+    justify-content: space-between;
+
+    list-style: none;
+}
+
+.reviewList::-webkit-scrollbar {
+    display: none;
+}
